@@ -1,0 +1,65 @@
+VI Improved (VIM)
+=================
+3 modes:
+  COMMAND - Every single character is a COMMAND to VI.
+  EDITOR  - Just like an editor. What you type is the text/content of your file.
+  EX      - allow's you to verify the command before executing it by pressing <ENTER>.
+  
+Note: Just press <ESC>, and you will be in Command Mode.
+
+        <ESC>           <ESC>
+Ex Mode -----> CMD Mode <----- Editor Mode
+    :   <-----           ----->  a/i/o/A/I/O
+
+COMMAND MODE
+------------
+a/A  - append to current position/end of Line
+i/I  - insert current/begining of line
+o/O  - open new line below/above
+
+h/<left arrow>  - left
+j/<down arrow>  - down
+k/<up arrow>    - up
+l/<right arrow> - right
+[#]w            - jump # word forward.
+                  w - move 1 word foward = ctrl+right
+                  3w - jump 3 words foward = (ctrl+right)X3
+[#]b            - jump # word backward.
+                  b - move 1 word back = ctrl+ left
+gg              - jump to 1st line
+G               - jump to end of file
+^/<HOME>        - jump to beginning of line.
+$/<END>         - jump to end of line.
+
+[#]dd - delete [#] lines. Eg. 5dd - delete 5 lines.
+[#]dw - delete [#] words. Eg. 3dw - delete 3 words, starting from current position.
+d$    - delete from current position till end of line.
+dG    - delete from current line to end of file
+[#]yy - copy [#] lines.
+[#]yw - copy [#] words.
+[#]x  - delete [#] characters.
+p     - paste after current position
+P     - Paste before current position.
+u     - Undo
+<CTRL>+r - Redo
+
+EX MODE (Execution Mode)
+------------------------
+           :
+CMD Mode -----> EX Mode 
+
+Note: From command mode, just press : to enter ex mode.
+      Then start typing the command. Verify it before pressing enter.
+
+w [<FILENAME>] - save to <FILENAME>
+w              - save
+wq             - save and exit
+q              - exit
+q!             - discard changes and exit
+
+
+
+Useful settings for YAML editing
+================================
+vi ~/.vimrc
+  autocmd FileType yaml setlocal nu ai ts=2 sw=2 sts=2 et colorcolumn=3
