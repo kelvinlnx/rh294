@@ -1,0 +1,15 @@
+- name: play1
+  hosts: servera
+  tasks:
+    - name: Task 1
+      debug:
+        msg: Task 1
+          
+    - name: Task 2
+      debug:
+        msg: Task 2
+          
+    - name: Task 3
+      debug:
+        msg: Task 3
+          

@@ -1,0 +1,11 @@
+monkey
+
+[webservers]
+server[a:b]
+
+[dbservers]
+server[c:d]
+
+[servers:children]
+webservers
+dbservers
