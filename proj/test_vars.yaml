@@ -1,0 +1,23 @@
+- name: play1
+  hosts: servera
+  vars:
+    value1: IN PLAY
+  vars_files:
+    - vars/data.yaml
+  tasks:
+    - name: Task 1
+      debug:
+        var: value1
+          
+    - name: include external variable file
+      include_vars: vars/another.yaml
+
+    - name: Task 2
+      vars:
+        value1: IN TASK 
+      debug:
+        msg: value1 is {{ value1 }}
+          
+    - name: What is value1?
+      debug:
+        msg: value1 is {{ value1 }}

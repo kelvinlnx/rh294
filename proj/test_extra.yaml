@@ -1,0 +1,23 @@
+- name: play1
+  hosts: servera
+  gather_facts: true
+  tasks:
+    - name: do something
+      command: hostname
+      register: cmd_result
+      delegate_to: serverc
+          
+    - name: show result
+      debug:
+        var: cmd_result
+         
+    - name: collect facts of serverb
+      setup:
+      delegate_to: serverb
+      delegate_facts: true
+
+    - name: display serverb info
+      debug:
+        msg:
+          - the hostname of serverb is {{ hostvars.serverb.ansible_fqdn }}
+          - and I am on {{ ansible_fqdn }}

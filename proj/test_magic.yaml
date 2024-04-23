@@ -1,0 +1,20 @@
+- name: play1
+  hosts: servera
+  gather_facts: true
+  vars:
+    host_dump: serverc
+  tasks:
+    - name: Host information
+      debug:
+        msg:
+          - "host: {{ ansible_fqdn }}"                    # ansible_facts['fqdn'] OR ansible_facts.fqdn
+          - "ip: {{ ansible_default_ipv4.address }}"
+          
+    - name: dump {{ host_dump }} info
+      debug:
+        var: hostvars[host_dump]
+          
+    - name: Task 3
+      debug:
+        var: hostvars
+          

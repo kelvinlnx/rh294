@@ -1,0 +1,8 @@
+- name: testing
+  hosts: servera
+  tasks:
+    - fetch: 
+        src: /tmp/dummy
+        dest: ./dummy
+
+    - pause: seconds=6000

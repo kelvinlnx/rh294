@@ -1,0 +1,8 @@
+- name: play1
+  hosts: servera
+  vars_files:
+    - vars/hidden.yaml
+  tasks:
+    - name: Task 1
+      debug:
+        msg: user is {{ user }} and password is {{ password }}

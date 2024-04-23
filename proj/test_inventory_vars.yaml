@@ -1,0 +1,25 @@
+#
+# Testing inventory variables
+#
+# Tips:
+#   - msg option for debug accepts List.
+#
+- name: play1
+  hosts:
+    - servera
+    - serverc
+  tasks:
+    - name: Display value of host_value1
+      debug:
+        msg:
+          - The value of host_value1 is {{ host_value1 }}
+          - second line
+          
+    - name: It can also be used in title - {{ host_value1 }}
+      debug:
+        msg: "{{ host_value1 }} is the value"
+          
+    - name: you can also use debug with var option
+      debug:
+        var: host_value1
+          

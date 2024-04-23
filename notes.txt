@@ -246,12 +246,150 @@ Playbook Syntax
   ---                                     # start of YAML (optional)
   - name: PLAY_NAME
     hosts: HOST_LIST
+    vars: VARS_DICT
+    vars_files: FILE_LIST		  # higher priority then the vars
     become: true|false
     gather_facts: True|false              # when dealing with network devices set to False
+    ignore_errors: true|False             # dangerous. Try not to use this if possible.
+    force_handlers: False|true
+    pre_tasks: TASK_LIST
     tasks:
       - name: TASK_NAME                  ╶┬╴ TASK
+        vars: VAR_DICTS                   │
         MODULE_NAME: MOD_OPT_DICTS        │
         become: true|false                │
         register: VAR_NAME                │
+        ignore_errors: true|False         │
+        run_once: true|False              │
+        loop: CONDITION_LIST              │
+        when: CONDITION_LIST              │   # before task execution
+        changed_when: CONDITION_LIST      │   # after task execution
+        failed_when: CONDITION_LIST       │   # after task execution
+        delegate_to: INVENTORY_HOSTNAME   │
+        delegate_facts: true|False        │
+        notify: HANDLER_LIST             ╶╯
+        listen: HANDLER_NAME              # ONLY used under handlers section
+
+      - block: TASK_LIST                 ╶┬╴ BLOCK
+        rescue: TASK_LIST                 │
+        always: TASK_LIST                 │
+        become: true|false                │
+        when: CONDITION_LIST             ╶╯
+    post_tasks: TASK_LIST
+    handlers: TASK_LIST
   ...
+
+Variables
+=========
+  SCOPE
+  -----
+    3 Types:
+      1. Global - Variables can be used anywhere in Playbook
+      2. Play   - Variables can only be used in Play/Task where they were declared
+      3. Host   - Variables can be used in ANY Playbook
+                  Also known as inventory variables
+                  Only available in hosts where they were declared
+
+              Precedence                          Validity
+              ----------                          --------
+    1. Global 1. -e CMD LINE OPTION               PLAYBOOK # cmd line or ansible.cfg config
+    2. Play                                       PLAYBOOK # play level
+              2. INCLUDE_VARS MODULE              PLAY - FROM INCLUDE TASK ONWARDS
+              3. TASK VARS                        Task ONLY
+              4. PLAY VARS_FILES                  PLAY
+              5. PLAY VARS                        PLAY
+    3. Host                                       # inventory variables
+              6. PLAYBOOK HOST_VARS               ╶┬╴Playbook
+              7. INVENTORY HOST_VARS               │
+              8. INVENTORY FILE HOST variables     │
+              9. PLAYBOOK GROUP_VARS               │
+              10. INVENTORY GROUP_VARS             │
+              11. PLAYBOOK GROUP_VARS/all          │
+              12. INVENTORY GROUP_VARS/all         │
+              13. INVENTORY FILE GROUP VARIABLES  ╶╯
+
+
+  Variables Precedence
+  --------------------
+    PROJECT/
+      ├╴ansible.cfg                           # INI Syntax
+      ├╴group_vars/
+      │ ├╴all                   6
+      │ └╴GROUP_NAME            4
+      ├╴host_vars/
+      │ └╴INVENTORY_HOSTNAME    1
+      ├╴inventory/
+      │ ├╴group_vars/
+      │ │ ├╴all                 7
+      │ │ └╴GROUP_NAME          5
+      │ ├╴host_vars/
+      │ │ └╴INVENTORY_HOSTNAME  2
+      │ └╴INVENTORY_FILE        3h 8g         # INI Syntax
+      └╴playbook.yaml
+
+  Internal Variables
+  ------------------
+    ansible_connection: local|Smart|ssh|paramiko|winrm
+
+    ansible_user: USERNAME
+    ansible_password: PASSWORD
+
+    ansible_host: <IPADDR|FQDN>
+    ansible_become: true|false
+    ansible_become_user: <USER>
+    ansible_become_method: su|Sudo|psexec|runas|enable
+    ansible_python_interpreter: auto|<LOCATION>
+
+    When identifying current managed hosts:
+      inventory_hostname
+      ansible_host
+      ansible_facts['hostname']   # short hostname
+      ansible_facts['fqdn']       # fully qualified domain name
+      ansible_play_hosts          # remainding hosts that haven't failed. used internally.
+
+    Extras:
+      become     - https://docs.ansible.com/ansible/latest/user_guide/become.html
+
+  Magic Variables
+  ===============
+    inventory_hostname      # inventory host name
+    groups                  # List of all inventory groups and their members
+    group_names             # List of all groups that the current inventory host belongs
+
+    Eg.
+      Assuming you're inside servera now, to refer to it's own groups magic var:
+        hostvars.servera.groups OR
+        hostvars['servera']['groups'] OR
+        groups
+      Structure of hostvars is as below:
+
+      hostvars:
+        servera:
+          inventory_hostname: servera # each host has it's magic var
+          
+          group_names:
+            - webservers
+            - nodes
+          groups:
+            all:
+              - monkey
+              - servera
+              - serverb
+            nodes:
+              - servera
+              - serverb
+            webservers:
+              - servera
+            dbservers:
+              - serverb
+            ungrouped:
+              - monkey
+          ansible_facts: {}
+        serverb:
+          inventory_hostname: serverb
+          ...
+TIPS:
+  Variables
+  =========
+    boolean & floating point numbers doesn't need to be quoted.
 

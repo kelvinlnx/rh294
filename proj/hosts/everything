@@ -1,7 +1,8 @@
 monkey
 
 [webservers]
-server[a:b]
+servera		host_value1="IN INVENTORY HOST DECLARATION"
+serverb
 
 [dbservers]
 server[c:d]
@@ -9,3 +10,6 @@ server[c:d]
 [servers:children]
 webservers
 dbservers
+
+[webservers:vars]
+host_value1 = IN INVENTORY GROUP DECLARATION

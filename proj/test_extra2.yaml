@@ -1,0 +1,21 @@
+- name: play1
+  hosts: webservers
+  tasks:
+    - name: Task 1
+      set_fact:
+        value1: 123
+        my_greetings: hi
+
+    - name: display value1
+      debug:
+        msg: value1 is {{ value1 }}
+
+    - name: change it
+      set_fact:
+        value1: "{{ value1 * 5 }}"
+      when: inventory_hostname == 'servera'
+          
+    - name: display value1
+      debug:
+        msg: value1 is {{ value1 }}
+
