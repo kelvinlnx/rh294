@@ -1,0 +1,43 @@
+---
+- name: testing execution order
+  hosts: webservers
+  gather_facts: false
+  force_handlers: true
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+      changed_when: true
+      notify:
+        - hand c
+        - handA
+
+    - name: T2
+      debug:
+        msg: Task 2
+      changed_when: inventory_hostname == 'servera'
+      failed_when: inventory_hostname == 'serverb'
+      notify:
+        - hand b
+
+    - name: T3
+      debug:
+        msg: Task 3
+      changed_when: true
+      notify:
+        - hand c
+        - hand b
+
+  handlers:
+    - name: handA
+      debug:
+        msg: Handler A
+
+    - name: hand b
+      debug:
+        msg: Handler B
+
+    - name: hand c
+      debug:
+        msg: Handler C
+

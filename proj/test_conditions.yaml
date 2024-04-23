@@ -12,7 +12,7 @@
     - name: Show result if display set to true 
       debug:
         msg: sh_result.stdout
-      when: display
+      when: not display
 
     # multiple conditions
     - name: display message if servera in webservers group and kernel is 5.14

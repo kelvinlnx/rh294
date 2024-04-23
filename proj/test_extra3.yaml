@@ -1,0 +1,19 @@
+- name: play1
+  hosts: servera
+  vars:
+    user_data: 123
+  tasks:
+    - name: Task 1
+      debug:
+        msg: data is {{ user_data | string + ' anything' }}
+          
+    - name: Task 2
+      vars:
+        value1: 1
+      debug:
+        msg: add 1 to {{ user_data }} is {{ user_data|int + 1 }}
+          
+    - name: Task 3
+      debug:
+        msg: Task 3
+          
