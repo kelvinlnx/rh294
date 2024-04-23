@@ -1,0 +1,29 @@
+- name: play1
+  hosts: servera
+  vars:
+    display: True
+  tasks:
+    - name: Get machine bootup kernel param
+      shell: "cat /proc/cmdline | cut -f1 -d' '"
+      register: sh_result
+      changed_when: false
+          
+    # single condition
+    - name: Show result if display set to true 
+      debug:
+        msg: sh_result.stdout
+      when: display
+
+    # multiple conditions
+    - name: display message if servera in webservers group and kernel is 5.14
+      debug:
+        msg: ServerA belongs to webservers group and kernel is 5.14
+      when:
+        - inventory_hostname in groups['webservers']
+        - "'5.14' in sh_result.stdout"
+          
+    - name: change failure condition
+      command: rpm -q abc
+      failed_when: '"not inlled" in cmd_result.stdout'
+      changed_when: false
+      register: cmd_result

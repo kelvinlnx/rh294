@@ -16,7 +16,7 @@
       vars:
         value1: IN TASK 
       debug:
-        msg: value1 is {{ value1 }}
+        msg: "{{ value1 }} is value1"
           
     - name: What is value1?
       debug:

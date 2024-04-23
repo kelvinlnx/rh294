@@ -138,6 +138,7 @@ Configuration File
       gathering           = smart|Implicit|explicit   # "ansible-config list" for help
       host_key_checking   = True|false
       retry_files_enabled = True|false
+      stdout_callback     = yaml|unix|...             # 'ansible-doc -t callback -l' for help
 
     # Escalate privilege
       [privilege_escalation]
@@ -273,7 +274,6 @@ Playbook Syntax
       - block: TASK_LIST                 ╶┬╴ BLOCK
         rescue: TASK_LIST                 │
         always: TASK_LIST                 │
-
         become: true|false                │
         when: CONDITION_LIST             ╶╯
     post_tasks: TASK_LIST
@@ -403,6 +403,7 @@ Conditional Symbols
   is defined   variable is defined
   is not defined   variable is not defined
   in LIST          variable/value is in a LIST
+  not          invert expression result
 
 HANDLERS
 ========
