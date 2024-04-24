@@ -429,4 +429,28 @@ HANDLERS
       6. post_tasks
       7.   handlers
 
+Jinja2
+======
+  Delimeters:
+    {% ... %} - statements
+    {{ ... }} - expressions to generate as output
+    {# ... #} - comments not included in output
+
+  Conditional Statements:
+    {% if CONDITION %}
+    ...
+    {% else %}
+    ...
+    {% endif %}
+
+  Loops:
+    {% for VAR in LIST %}
+    {% if CONDITION %}
+    ...
+    {% endif %}
+    {% endfor %}
+
+    {% for VAR in LIST [if CONDITION] %}
+    ...
+    {% endfor %}
 

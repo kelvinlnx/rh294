@@ -1,0 +1,7 @@
+[defaults]
+hosname = {{ ansible_fqdn }}
+
+[users]
+user = {%- for NAMES in user_list -%}
+{{ NAMES }},
+{%- endfor -%}

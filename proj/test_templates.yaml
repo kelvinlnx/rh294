@@ -1,0 +1,13 @@
+- name: testing templates
+  hosts: servera
+  gather_facts: true
+  vars:
+    user_list:
+      - albert
+      - julie
+      - muniandy
+  tasks:
+    - name: copy template to /tmp/config.cfg
+      template:
+        src: templates/config.cfg.j2
+        dest: /tmp/config.cfg
