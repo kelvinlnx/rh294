@@ -1,0 +1,18 @@
+- name: testing roles
+  hosts: servera
+  gather_facts: true
+  roles:
+    - simple
+      #- role: simple
+      #  vars:
+      #    public_username: THEWRONGWAY
+    - role: simple
+      public_username: THE RIGHT WAY
+    - {role: simple, public_username: Another Name }
+        #- role: simple
+        #  vars:
+        #    public_username: HAHAHAHA
+  tasks:
+    - name: T1
+      debug:
+        msg: This is Task 1

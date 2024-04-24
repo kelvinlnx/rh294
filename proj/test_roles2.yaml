@@ -1,0 +1,8 @@
+- name: testing roles using loop
+  hosts: servera
+  tasks:
+    - name: Include role
+      include_role:
+        name: simple
+      vars:
+        public_username: "abc"

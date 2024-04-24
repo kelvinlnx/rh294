@@ -251,9 +251,14 @@ Playbook Syntax
     vars_files: FILE_LIST		  # higher priority then the vars
     become: true|false
     gather_facts: True|false              # when dealing with network devices set to False
+    collections: COLLECTION_LIST	  # use FQCN instead, if possible
     ignore_errors: true|False             # dangerous. Try not to use this if possible.
     force_handlers: False|true
     pre_tasks: TASK_LIST
+    roles:                                # can be written as - {role: ROLE, var: VALUE, ...}
+      - role: ROLE_NAME                  ╶┬╴ ROLE
+        VAR_DICTS                         │
+        become: true|false               ╶╯
     tasks:
       - name: TASK_NAME                  ╶┬╴ TASK
         vars: VAR_DICTS                   │
@@ -278,6 +283,9 @@ Playbook Syntax
         when: CONDITION_LIST             ╶╯
     post_tasks: TASK_LIST
     handlers: TASK_LIST
+
+  - name: Import Playbook
+    import_playbook: PLAYBOOK
   ...
 
 Variables
@@ -453,4 +461,30 @@ Jinja2
     {% for VAR in LIST [if CONDITION] %}
     ...
     {% endfor %}
+
+
+EXTRAS:
+  roles:
+    - role: role1
+      vars:
+        key1: value1
+        key2: value2 hellow
+    - role: role1
+      vars:
+        key1: abc
+        key2: def
+    - { role: role1, vars: { key1: no3, key2: three }}
+    - { role: role1, key1: no4, key2: four }
+    - { role: role1, key1: no5, key2: five }
+
+Extras:
+  forks  -> number of ssh sessions to spawn per TASK
+         -> set using the -f option or "forks" setting in defaults section of ansible.cfg
+  serial -> execute whole PLAY for SERIAL number of nodes
+         -> set in playbook at play level
+
+  Config Settings   - https://docs.ansible.com/ansible/latest/reference_appendices/config.html
+  Playbook Keywords - https://docs.ansible.com/ansible/latest/reference_appendices/playbooks_keywords.html
+  Playbook Filters  - https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html
+  Jinja2            - https://jinja.palletsprojects.com/en/3.1.x/templates
 
