@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: "gitlab"
+  description: "An ansible role for GitLab Git web interface. Fork of geerlingguy.gitlab"
+
+  author: "jonaspammer"
+  license: "MIT"
+
+  min_ansible_version: "2.13"
+  platforms:
+    # note: text after "actively tested: " represent the docker image name
+    - name: EL # (Enterprise Linux)
+      versions:
+        - "9" # actively tested: rockylinux9
+    - name: Debian
+      versions:
+        - bullseye # actively tested: debian11
+        - bookworm # actively tested: debian12
+    - name: Ubuntu
+      versions:
+        - focal # actively tested: ubuntu2004
+        - jammy # actively tested: ubuntu2204
+
+  galaxy_tags: []
+
+dependencies: []

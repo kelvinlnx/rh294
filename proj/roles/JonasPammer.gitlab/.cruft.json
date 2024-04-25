@@ -1,0 +1,24 @@
+{
+  "template": "https://github.com/JonasPammer/cookiecutter-ansible-role",
+  "commit": "2f263588f053920797a3b1879d6d4bfde2cdfda1",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "full_name": "Jonas Pammer",
+      "email": "opensource@jonaspammer.at",
+      "code_of_conduct_enforcement_contact_email": "opensource@jonaspammer.at",
+      "github_username": "JonasPammer",
+      "open_source_license": "MIT",
+      "galaxy_name": "jonaspammer",
+      "min_ansible_version": "2.13",
+      "allow_duplicates": "no",
+      "ansible_user_needs_to_become": true,
+      "use_renovate": true,
+      "role_name": "gitlab",
+      "project_slug": "ansible-role-gitlab",
+      "project_short_purpose": "GitLab Git web interface",
+      "_template": "https://github.com/JonasPammer/cookiecutter-ansible-role"
+    }
+  },
+  "directory": null
+}

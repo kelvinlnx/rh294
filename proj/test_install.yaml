@@ -1,0 +1,13 @@
+- name: install webserver
+  hosts: webservers
+  tasks:
+    - name: install httpd
+      become: true
+      dnf:
+        name: httpd
+        state: latest
+
+    - name: start the webserver
+      service:
+        name: httpd
+        state: started

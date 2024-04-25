@@ -1,0 +1,513 @@
+= ansible-role-gitlab
+Jonas Pammer <opensource@jonaspammer.at>;
+:toc: left
+:toclevels: 2
+:toc-placement!:
+:source-highlighter: rouge
+
+ifdef::env-github[]
+// https://gist.github.com/dcode/0cfbf2699a1fe9b46ff04c41721dda74#admonitions
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+https://galaxy.ansible.com/jonaspammer/gitlab[image:https://img.shields.io/badge/available%20on%20ansible%20galaxy-jonaspammer.gitlab-brightgreen[Version on Galaxy]]
+// Very Relevant Status Badges
+https://github.com/JonasPammer/ansible-role-gitlab/actions/workflows/ci.yml[image:https://github.com/JonasPammer/ansible-role-gitlab/actions/workflows/ci.yml/badge.svg[Testing CI]]
+
+
+An Ansible role for installing GitLab, a Ruby-based front-end to Git,
+on any RedHat/CentOS or Debian/Ubuntu linux system.
+
+GitLab’s default administrator account details are below; be sure to
+login immediately after installation and change these credentials!
+
+....
+root
+5iveL!fe
+....
+
+[NOTE]
+.DISCLAIMER
+=====
+This role is a fork of https://github.com/geerlingguy/ansible-role-gitlab[geerlingguy/ansible-role-gitlab v3.2.0 (26 November, 2021)] (MIT License, Copyright 2017 Jeff Geerling), which is no longer being maintained and has been archived with the following very understandable disclaimer:
+
+[quote]
+Deprecated: In September 2023, I deprecated this role as I am no longer maintaining any GitLab instances, and use Gitea instead for my personal work. Please consider forking this role or use someone else's GitLab role.
+
+The role itself is still good and working as can be seen by its
+https://star-history.com/#geerlingguy/ansible-role-gitlab[constant star rise] (currently 700)
+even though there's been no commit since 2 years. +
+I made this fork to fix this outlying issue I encountered on my own infra:
+
+* https://github.com/geerlingguy/ansible-role-gitlab/issues/221[Make installation timeout configurable (#221)]
+
+// it also gave me insight into forking
+=====
+
+toc::[]
+
+[[meta]]
+== 🔎 Metadata
+Below you can find information on…
+
+* the role's required Ansible version
+* the role's supported platforms
+* the role's https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#role-dependencies[role dependencies]
+
+.link:meta/main.yml[]
+[source,yaml]
+----
+include::meta/main.yml[]
+----
+
+
+[[requirements]]
+== 📌 Requirements
+// Any prerequisites that may not be covered by this role or Ansible itself should be mentioned here.
+The Ansible User needs to be able to `become`.
+
+
+The https://galaxy.ansible.com/community/general[`community.general` collection]
+must be installed on the Ansible controller.
+
+
+[[variables]]
+== 📜 Role Variables
+// A description of the settable variables for this role should go here
+// and any variables that can/should be set via parameters to the role.
+// Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.)
+// should be mentioned here as well.
+
+[source,yaml]
+----
+gitlab_domain: gitlab
+gitlab_external_url: "https://{{ gitlab_domain }}/"
+----
+The domain and URL at which the GitLab instance will be accessible.
+This is set as the `+external_url+` configuration setting in `+gitlab.rb+`,
+and if you want to run GitLab on a different port (besides 80/443), you
+can specify the port here (e.g. `+https://gitlab:8443/+` for port 8443).
+
+[source,yaml]
+----
+gitlab_git_data_dir: "/var/opt/gitlab/git-data"
+----
+The `+gitlab_git_data_dir+` is the location where all the Git
+repositories will be stored. You can use a shared drive or any path on
+the system.
+
+[source,yaml]
+----
+gitlab_backup_path: "/var/opt/gitlab/backups"
+----
+The `+gitlab_backup_path+` is the location where Gitlab backups will be
+stored.
+
+[source,yaml]
+----
+gitlab_edition: "gitlab-ce"
+----
+The edition of GitLab to install. Usually either `+gitlab-ce+`
+(Community Edition) or `+gitlab-ee+` (Enterprise Edition).
+
+[source,yaml]
+----
+gitlab_version: ''
+----
+If you’d like to install a specific version, set the version here
+(e.g. `+11.4.0-ce.0+` for Debian/Ubuntu, or `+11.4.0-ce.0.el7+` for RedHat/CentOS).
+
+[source,yaml]
+----
+gitlab_install_async_timeout: 600
+gitlab_install_async_poll: 5
+----
+How long you want Ansible to hold ssh connection during GitLab installation task.
+More Information: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_async.html
+
+[source,yaml]
+----
+gitlab_config_template: "gitlab.rb.j2"
+----
+The `+gitlab.rb.j2+` template packaged with this role is meant to be
+very generic and serve a variety of use cases. However, many people
+would like to have a much more customized version, and so you can
+override this role’s default template with your own, adding any
+additional customizations you need. To do this:
+
+* Create a `+templates+` directory at the same level as your playbook.
+* Create a `+templates\mygitlab.rb.j2+` file (just choose a different
+name from the default template).
+* Set the variable like: `+gitlab_config_template: mygitlab.rb.j2+`
+(with the name of your custom template).
+
+=== SSL Configuration
+
+[source,yaml]
+----
+gitlab_redirect_http_to_https: true
+gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+----
+GitLab SSL configuration; tells GitLab to redirect normal http requests
+to https, and the path to the certificate and key (the default values
+will work for automatic self-signed certificate creation, if set to
+`+true+` in the variable below).
+
+[source,yaml]
+----
+# SSL Self-signed Certificate Configuration.
+gitlab_create_self_signed_cert: true
+gitlab_self_signed_cert_subj: "/C=US/ST=Missouri/L=Saint Louis/O=IT/CN={{ gitlab_domain }}"
+----
+Whether to create a self-signed certificate for serving GitLab over a
+secure connection. Set `+gitlab_self_signed_cert_subj+` according to
+your locality and organization.
+
+=== LetsEncrypt Configuration.
+
+[source,yaml]
+----
+gitlab_letsencrypt_enable: false
+gitlab_letsencrypt_contact_emails: ["gitlab@example.com"]
+gitlab_letsencrypt_auto_renew_hour: 1
+gitlab_letsencrypt_auto_renew_minute: 30
+gitlab_letsencrypt_auto_renew_day_of_month: "*/7"
+gitlab_letsencrypt_auto_renew: true
+----
+GitLab LetsEncrypt configuration; tells GitLab whether to request and
+use a certificate from LetsEncrypt, if `+gitlab_letsencrypt_enable+` is
+set to `+true+`. Multiple contact emails can be configured under
+`+gitlab_letsencrypt_contact_emails+` as a list.
+
+[source,yaml]
+----
+# LDAP Configuration.
+gitlab_ldap_enabled: false
+gitlab_ldap_host: "example.com"
+gitlab_ldap_port: "389"
+gitlab_ldap_uid: "sAMAccountName"
+gitlab_ldap_method: "plain"
+gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
+gitlab_ldap_password: "password"
+gitlab_ldap_base: "DC=example,DC=com"
+----
+GitLab LDAP configuration; if `+gitlab_ldap_enabled+` is `+true+`, the
+rest of the configuration will tell GitLab how to connect to an LDAP
+server for centralized authentication.
+
+[source,yaml]
+----
+gitlab_dependencies:
+  - openssh-server
+  - postfix
+  - curl # (Removed for RedHat_9: https://github.com/ansible/ansible/issues/82461)
+  - openssl
+  - tzdata
+----
+Dependencies required by GitLab for certain functionality, like timezone
+support or email. You may change this list in your own playbook if, for
+example, you would like to install `+exim+` instead of `+postfix+`.
+
+[source,yaml]
+----
+gitlab_time_zone: "UTC"
+----
+Gitlab timezone.
+
+[source,yaml]
+----
+gitlab_backup_keep_time: "604800"
+----
+How long to keep local backups (useful if you don’t want backups to fill
+up your drive!).
+
+[source,yaml]
+----
+gitlab_download_validate_certs: true
+----
+Controls whether to validate certificates when downloading the GitLab
+installation repository install script.
+
+[source,yaml]
+----
+# Email configuration.
+gitlab_email_enabled: false
+gitlab_email_from: "gitlab@example.com"
+gitlab_email_display_name: "Gitlab"
+gitlab_email_reply_to: "gitlab@example.com"
+----
+Gitlab system mail configuration. Disabled by default; set
+`+gitlab_email_enabled+` to `+true+` to enable, and make sure you enter
+valid from/reply-to values.
+
+[source,yaml]
+----
+# SMTP Configuration
+gitlab_smtp_enable: false
+gitlab_smtp_address: "smtp.server"
+gitlab_smtp_port: "465"
+gitlab_smtp_user_name: "smtp user"
+gitlab_smtp_password: "smtp password"
+gitlab_smtp_domain: "example.com"
+gitlab_smtp_authentication: "login"
+gitlab_smtp_enable_starttls_auto: true
+gitlab_smtp_tls: false
+gitlab_smtp_openssl_verify_mode: "none"
+gitlab_smtp_ca_path: "/etc/ssl/certs"
+gitlab_smtp_ca_file: "/etc/ssl/certs/ca-certificates.crt"
+----
+Gitlab SMTP configuration; of `+gitlab_smtp_enable+` is `+true+`, the
+rest of the configuration will tell GitLab how to send mails using an
+smtp server.
+
+[source,yaml]
+----
+gitlab_nginx_listen_port: 8080
+----
+If you are running GitLab behind a reverse proxy, you may want to
+override the listen port to something else.
+
+[source,yaml]
+----
+gitlab_nginx_listen_https: false
+----
+If you are running GitLab behind a reverse proxy, you may wish to
+terminate SSL at another proxy server or load balancer.
+
+[source,yaml]
+----
+gitlab_nginx_ssl_verify_client: ""
+gitlab_nginx_ssl_client_certificate: ""
+----
+If you want to enable
+https://docs.gitlab.com/omnibus/settings/nginx.html#enable-2-way-ssl-client-authentication[2-way
+SSL Client Authentication], set `+gitlab_nginx_ssl_verify_client+` and
+add a path to the client certificate in
+`+gitlab_nginx_ssl_client_certificate+`.
+
+[source,yaml]
+----
+gitlab_default_theme: 2
+----
+GitLab includes a number of themes, and you can set the default for all
+users with this variable. See
+https://github.com/gitlabhq/gitlabhq/blob/master/config/gitlab.yml.example#L79-L85[the
+included GitLab themes to choose a default].
+
+[source,yaml]
+----
+gitlab_extra_settings:
+  - gitlab_rails:
+      - key: "trusted_proxies"
+        value: "['foo', 'bar']"
+      - key: "env"
+        type: "plain"
+        value: |
+          {
+          "http_proxy" => "https://my_http_proxy.company.com:3128",
+          "https_proxy" => "https://my_http_proxy.company.com:3128",
+          "no_proxy" => "localhost, 127.0.0.1, company.com"
+          }
+  - unicorn:
+      - key: "worker_processes"
+        value: 5
+      - key: "pidfile"
+        value: "/opt/gitlab/var/unicorn/unicorn.pid"
+----
+Gitlab have many other settings
+(https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template[see
+official documentation]), and you can add them with this special
+variable `+gitlab_extra_settings+` with the concerned setting and the
+`+key+` and `+value+` keywords.
+
+
+[[public_vars]]
+== 📜 Facts/Variables defined by this role
+
+Each variable listed in this section
+is dynamically defined when executing this role (and can only be overwritten using `ansible.builtin.set_facts`) _and_
+is meant to be used not just internally.
+
+
+[[tags]]
+== 🏷️ Tags
+
+// Checkout https://github.com/tribe29/ansible-collection-tribe29.checkmk/blob/main/roles/server/README.md#tags
+// for an awesome example of grouping tasks using tags
+
+Tasks are tagged with the following
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_tags.html#adding-tags-to-roles[tags]:
+
+[cols="1,1"]
+|===
+|Tag | Purpose
+
+2+| This role does not have officially documented tags yet.
+
+// | download-xyz
+// |
+// | install-prerequisites
+// |
+// | install
+// |
+// | create-xyz
+// |
+|===
+
+You can use Ansible to skip tasks, or only run certain tasks by using these tags. By default, all tasks are run when no tags are specified.
+
+[[dependencies]]
+== 👫 Dependencies
+// A list of other roles should go here,
+// plus any details in regard to parameters that may need to be set for other roles,
+// or variables that are used from other roles.
+
+
+
+[[example_playbooks]]
+== 📚 Example Playbook Usages
+// Including examples of how to use this role in a playbook for common scenarios is always nice for users.
+
+[NOTE]
+====
+This role is part of https://github.com/JonasPammer/ansible-roles[
+many compatible purpose-specific roles of mine].
+
+The machine needs to be prepared.
+In CI, this is done in `molecule/resources/prepare.yml`
+which sources its soft dependencies from `requirements.yml`:
+
+.link:molecule/resources/prepare.yml[]
+[source,yaml]
+----
+include::molecule/resources/prepare.yml[]
+----
+
+The following diagram is a compilation of the "soft dependencies" of this role
+as well as the recursive tree of their soft dependencies.
+
+image:https://raw.githubusercontent.com/JonasPammer/ansible-roles/master/graphs/dependencies_gitlab.svg[
+requirements.yml dependency graph of jonaspammer.gitlab]
+====
+
+.Minimum Viable Play
+====
+[source,yaml]
+----
+roles:
+  - role: jonaspammer.gitlab
+
+vars:
+  gitlab_external_url: "https://gitlab.example.com/"
+----
+====
+
+
+[[tested-distributions]]
+== 🧪 Tested Distributions
+
+A role may work on different *distributions*, like Red Hat Enterprise Linux (RHEL),
+even though there is no test for this exact distribution.
+
+// good reference for what to follow -- most starred and pinned project of geerlingguy:
+// https://github.com/geerlingguy/ansible-role-docker/blob/master/.github/workflows/ci.yml
+|===
+| OS Family | Distribution | Distribution Release Date | Distribution End of Life | Accompanying Docker Image
+
+// https://endoflife.date/rocky-linux
+| Rocky
+| Rocky Linux 8 (https://www.howtogeek.com/devops/is-rocky-linux-the-new-centos/[RHEL/CentOS 8 in disguise])
+| 2021-06
+| 2029-05
+| https://github.com/geerlingguy/docker-rockylinux8-ansible/actions?query=workflow%3ABuild[image:https://github.com/geerlingguy/docker-rockylinux8-ansible/workflows/Build/badge.svg?branch=master[CI]]
+
+| Rocky
+| Rocky Linux 9
+| 2022-07
+| 2032-05
+| https://github.com/geerlingguy/docker-rockylinux9-ansible/actions?query=workflow%3ABuild[image:https://github.com/geerlingguy/docker-rockylinux9-ansible/workflows/Build/badge.svg?branch=master[CI]]
+
+// https://ubuntu.com/about/release-cycle
+| Debian
+| Ubuntu 20.04 LTS
+| 2021-04
+| 2025-04
+| https://github.com/geerlingguy/docker-ubuntu2004-ansible/actions?query=workflow%3ABuild[image:https://github.com/geerlingguy/docker-ubuntu2004-ansible/workflows/Build/badge.svg?branch=master[CI]]
+
+| Debian
+| Ubuntu 22.04 LTS
+| 2022-04
+| 2027-04
+| https://github.com/geerlingguy/docker-ubuntu2204-ansible/actions?query=workflow%3ABuild[image:https://github.com/geerlingguy/docker-ubuntu2204-ansible/workflows/Build/badge.svg?branch=master[CI]]
+
+// https://wiki.debian.org/DebianReleases
+// https://wiki.debian.org/LTS
+| Debian
+| Debian 11
+| 2021-08
+| 2024-06 (2026-06 LTS)
+| https://github.com/geerlingguy/docker-debian11-ansible/actions?query=workflow%3ABuild[image:https://github.com/geerlingguy/docker-debian11-ansible/workflows/Build/badge.svg?branch=master[CI]]
+
+| Debian
+| Debian 12
+| 2023-06
+| 2026-06 (2028-06 LTS)
+| https://github.com/geerlingguy/docker-debian12-ansible/actions?query=workflow%3ABuild[image:https://github.com/geerlingguy/docker-debian12-ansible/workflows/Build/badge.svg?branch=master[CI]]
+|===
+
+
+[[tested-ansible-versions]]
+== 🧪 Tested Ansible versions
+
+The tested ansible versions try to stay equivalent with the
+https://github.com/ansible-collections/community.general#tested-with-ansible[
+support pattern of Ansible's `community.general` collection].
+As of writing this is:
+
+// * 2.13 (Ansible 6)
+// * 2.14 (Ansible 7)
+// * 2.15 (Ansible 8)
+* 2.16 (Ansible 9)
+
+
+[[development]]
+== 📝 Development
+// Badges about Conventions in this Project
+https://conventionalcommits.org[image:https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg[Conventional Commits]]
+https://results.pre-commit.ci/latest/github/JonasPammer/ansible-role-gitlab/master[image:https://results.pre-commit.ci/badge/github/JonasPammer/ansible-role-gitlab/master.svg[pre-commit.ci status]]
+// image:https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white[pre-commit, link=https://github.com/pre-commit/pre-commit]
+
+include::DEVELOPMENT.adoc[]
+
+
+[[contributing]]
+== 💪 Contributing
+image:https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square[PRs Welcome]
+https://open.vscode.dev/JonasPammer/ansible-role-gitlab[image:https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc[Open in Visual Studio Code]]
+
+include::CONTRIBUTING.adoc[]
+
+
+[[changelog]]
+== 🗒 Changelog
+Please refer to the
+https://github.com/JonasPammer/ansible-role-gitlab/releases[Release Page of this Repository]
+for a human changelog of the corresponding
+https://github.com/JonasPammer/ansible-role-gitlab/tags[Tags (Versions) of this Project].
+
+Note that this Project adheres to Semantic Versioning.
+Please report any accidental breaking changes of a minor version update.
+
+
+[[license]]
+== ⚖️ License
+
+.link:LICENSE[]
+----
+include::LICENSE[]
+----

@@ -1,0 +1,24 @@
+---
+# vars file of ansible-role jonaspammer.gitlab
+# (tl;dr: almost not overwrite-able variables)
+
+_gitlab__package_version_separator:
+  default: "="
+  RedHat: "-"
+_gitlab__repository_installation_script_url:
+  default: "https://packages.gitlab.com/install/repositories/gitlab/{{ gitlab_edition }}/script.deb.sh"
+  RedHat: "https://packages.gitlab.com/install/repositories/gitlab/{{ gitlab_edition }}/script.rpm.sh"
+
+gitlab__package_version_separator: "{{
+  _gitlab__package_version_separator[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
+  _gitlab__package_version_separator[ansible_os_family ~ '_' ~ ansible_distribution_major_version])|default(
+  _gitlab__package_version_separator[ansible_distribution])|default(
+  _gitlab__package_version_separator[ansible_os_family])|default(
+  _gitlab__package_version_separator['default']) }}"
+
+gitlab__repository_installation_script_url: "{{
+  _gitlab__repository_installation_script_url[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
+  _gitlab__repository_installation_script_url[ansible_os_family ~ '_' ~ ansible_distribution_major_version])|default(
+  _gitlab__repository_installation_script_url[ansible_distribution])|default(
+  _gitlab__repository_installation_script_url[ansible_os_family])|default(
+  _gitlab__repository_installation_script_url['default']) }}"

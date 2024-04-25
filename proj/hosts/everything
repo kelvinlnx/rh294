@@ -1,4 +1,4 @@
-monkey
+monkey		ansible_host=172.25.250.10
 
 [webservers]
 servera		host_value1="IN INVENTORY HOST DECLARATION"
