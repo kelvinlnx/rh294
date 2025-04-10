@@ -1,0 +1,26 @@
+---
+- name: My first playbook
+  hosts: servera.lab.example.com
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+
+    - name: Get hostname
+      command: hostname
+      changed_when: false
+      register: cmd_result
+
+    - name: Display result of the command module
+      debug:
+        msg: The hostname of your managed node is {{ cmd_result.stdout_lines[0] }}
+
+    - name: copy file
+      copy:
+        src: ./files/data
+        dest: /tmp/dummy
+
+    - name: T4
+      debug:
+        msg: Task 4 end
+...

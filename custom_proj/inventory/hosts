@@ -1,0 +1,15 @@
+monkey
+
+[testservers]
+servera.lab.example.com
+
+[webservers]
+server[b:c].lab.example.com
+
+[dbservers]
+serverd.lab.example.com
+
+[nodes:children]
+testservers
+webservers
+dbservers
