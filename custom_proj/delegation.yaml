@@ -1,0 +1,42 @@
+---
+#- name: pre run gathering facts for servera
+#  hosts: testservers
+#  gather_facts: false
+#  tasks:
+#    - name: manually gather facts
+#      setup:
+
+- name: delegation
+  hosts: dbservers
+  gather_facts: true
+  tasks:
+    - name: T1
+      debug:
+        msg: Before {{ ansible_facts.default_ipv4['address'] }}
+
+    - name: Get servera ip info
+      setup:
+      delegate_to: servera.lab.example.com
+      delegate_facts: true
+
+    - name: display result
+      debug:
+        msg:
+          - "{{ inventory_hostname }} ip is {{ ansible_facts.default_ipv4['address'] }}"
+          - servera ip address is {{ hostvars['servera.lab.example.com'].ansible_facts.default_ipv4.address }}
+
+    - name: create me own facts
+      set_fact:
+        hi: 123
+
+    - name: show hi
+      debug:
+        var: hi
+
+    - name: change it
+      set_fact:
+        hi: "{{ hi + 2 * 3 }}"
+
+    - name: what is hi
+      debug:
+        var: hi

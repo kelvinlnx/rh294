@@ -1,0 +1,44 @@
+---
+# Learning points:
+#   - facts are a form of inventory/host variables
+#   - declare custom facts in task
+#   - use 'ansible clients -m setup' to check all fields provided by setup module
+#   - task delegation
+#   - facts delegation
+#   
+- name: Using facts
+  hosts: servera.lab.example.com
+  tasks:
+    - name: What is my hostname?
+      debug:
+        msg: My hostname is {{ ansible_facts.fqdn }}  # or {{ ansible_facts['fqdn'] }} or {{ ansible_fqdn }}
+
+          
+- name: Getting facts from another machine
+  hosts: servera.lab.example.com
+  gather_facts: false
+  tasks:
+    - name: collect facts from serverb          # this is a very bad method
+      setup:
+      delegate_to: serverb.lab.example.com
+
+    - name: display result
+      debug:
+        msg:
+          - serverb hostname is {{ ansible_facts.fqdn }}
+          - now how do I get servera hostname?          # reason why play is badly written
+
+- name: Best method of collecting facts from another machine
+  hosts: servera.lab.example.com
+  tasks:
+    - name: delegate facts correctly
+      setup:
+      delegate_to: serverc.lab.example.com
+      delegate_facts: true
+
+    - name: show the result
+      debug:
+        msg:
+          - servera hostname is {{ ansible_facts.fqdn }}
+          - serverc hostname is {{ hostvars['serverc.lab.example.com'].ansible_facts.fqdn }}
+          - serverc ip is {{ hostvars['serverc.lab.example.com']['ansible_facts']['default_ipv4']['address'] }}

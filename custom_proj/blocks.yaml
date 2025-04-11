@@ -1,0 +1,52 @@
+---
+# Tips:
+#   - test the results of execution when the rescue and/or always blocks are removed.
+#   - try not to use play level ignore_errors
+#
+- name: play1
+  hosts: servera.lab.example.com
+  #ignore_errors: true
+  vars:
+    doit: true
+  tasks:
+    - name: Task 1
+      debug:
+        msg: Task 1
+      failed_when: true
+      ignore_errors: true
+          
+    - name: Task 2
+      fail:
+        msg: Whatever la
+      ignore_errors: true
+
+    - block:
+        - name: Task 3
+          debug:
+            msg: Task 3
+          failed_when: true
+          
+        - name: Task 4
+          debug:
+            msg: Task 4
+      rescue:
+        - name: Rescue 1
+          debug:
+            msg: Rescue 1
+
+        - name: Rescue 2
+          debug:
+            msg: Rescue 2
+      always:
+        - name: Always 1
+          debug:
+            msg: Always 1
+
+        - name: Always 2
+          debug:
+            msg: Always 2
+      when: doit | bool 
+
+    - name: Task 5
+      debug:
+        msg: Task 5

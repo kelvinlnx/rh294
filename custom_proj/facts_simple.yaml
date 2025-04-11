@@ -1,0 +1,8 @@
+- name: testing facts
+  hosts: webservers
+  gather_facts: true
+  tasks:
+    - name: display my ipv4 address
+      debug:
+        msg: "{{ inventory_hostname }} has ipv4 address {{ ansible_facts['default_ipv4']['address'] }}"
+          #'{{ inventory_hostname }} has ipv4 address {{ ansible_default_ipv4.address }}'

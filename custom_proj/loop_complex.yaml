@@ -1,0 +1,53 @@
+---
+- name: test advanced loops
+  hosts: localhost
+  vars:
+    list_1:
+      - name: albert
+        age: 1
+        data:
+          - file1
+          - file2
+      - name: boy
+        age: 2
+        data:
+          - file3
+    list_2:
+      - name: girl
+        age: 3
+        data:
+          - file_a
+          - file_b
+          - file_c
+      - "{{ list_1 }}"
+
+
+  tasks:
+    - name: list_1
+      debug:
+        msg: name={{ item.name }} and age={{ item.age }}
+      loop: "{{ list_1 }}"
+
+    - name: list_2
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ list_2 }}"
+
+    - name: this loop uses the flatten filter
+      debug:
+        msg: "name: {{ item.name }} and age: {{ item.age }}"
+      loop: "{{ list_2 | flatten }}"
+#      with_flatten: "{{ list_2 }}"
+
+    - name: list_2 ori
+      debug:
+        msg: "{{ list_2 }}"
+
+    - name: list_2 flatten
+      debug:
+        msg: "{{ list_2 | flatten}}"
+
+    - name: list_2 flatten with subelements
+      debug:
+        msg: "user {{ item[0].name }} with data {{ item[1] }}"
+      loop: "{{ list_2 | flatten | subelements('data') }}"

@@ -5,7 +5,7 @@
 #   - LISTEN TO INSTRUCTOR EXPLAINING hostvars!!! It's a very important variable
 #
 - name: magic variables
-  hosts: clients
+  hosts: testservers
   gather_facts: false
   tasks:
     - name: name of host in the inventory

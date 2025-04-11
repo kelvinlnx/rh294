@@ -1,0 +1,44 @@
+---
+# 
+# Testing Simple Loops
+#
+# Tips:
+#   - if option for module accepts list, don't use loop
+#   - to learn more loop methods, refer to the following link
+#     https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html
+#
+- name: test loops
+  hosts: webservers
+  gather_facts: false
+  vars:
+    value1: 1 2 3
+    my_list:
+      - item one
+      - item two 
+  tasks:
+    - name: T1
+      debug:
+        msg: Item is {{ item }} 
+      loop:
+        - "{{ value1 }}"
+        - hello world
+        - 123
+      when: inventory_hostname == "servera.lab.example.com"
+
+    - name: T2
+      debug:
+        msg: Task 2 item is {{ item }}
+      loop: "{{ my_list }}"
+
+    - name: T3
+      vars:
+        applicants:
+          - name: one
+            age: 10
+          - name: two
+            age: 20
+          - name: three
+            age: 30
+      debug:
+        msg: Name={{ item.name }} age={{ item.age }}
+      loop: "{{ applicants }}"

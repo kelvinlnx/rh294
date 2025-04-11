@@ -5,14 +5,11 @@
     - dbservers
   become: true
   tasks:
-    - name: install server
+    - name: install packages - {{ pkg_name }} & {{ fw_pkg }}
       ansible.builtin.dnf:
-        name: '{{ pkg_name }}'
-        state: latest
-
-    - name: make sure firewalld is installed
-      ansible.builtin.dnf:
-        name: '{{ fw_pkg }}'
+        name:
+          - '{{ pkg_name }}'
+          - '{{ fw_pkg }}'
         state: latest
 
 # we will update this task when we learn how to write conditions
@@ -42,7 +39,7 @@
 
 # we will also update this play when we learn about loops
 - name: test website
-  hosts: clients
+  hosts: testservers
   tasks:
     - name: test website
       ansible.builtin.uri:

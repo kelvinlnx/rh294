@@ -1,0 +1,36 @@
+---
+# Learning points:
+#   - writing conditions
+#   - making use of registered variables in conditions
+#   - changing status of tasks
+#
+- name: Testing Conditions
+  hosts: servera.lab.example.com
+  vars:
+    hide_result: false
+  tasks:
+    - name: Get kernel name for current bootup
+      shell: "grep -o 'vmlinuz[[:alnum:][:punct:]]*' /proc/cmdline"
+      register: sh_result
+      changed_when: false
+          
+    # single condition
+    - name: Show result if hide_result set to False 
+      debug:
+        var: sh_result.stdout
+      when: not hide_result
+
+    # multiple conditions
+    - name: display message if servera in webservers group and kernel is 5.14
+      debug:
+        msg: "{{ ansible_facts.fqdn }}  belongs to webservers group and kernel is 5.14"
+      when:
+        - inventory_hostname in groups['webservers']
+        - "'5.14' in sh_result.stdout"
+
+    # you can use registered variable immediately in task          
+    - name: change failure condition
+      command: grep roots /etc/passwd
+      failed_when: '"No such file" in cmd_result.stderr'
+      changed_when: false
+      register: cmd_result

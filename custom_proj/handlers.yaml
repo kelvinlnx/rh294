@@ -1,0 +1,40 @@
+---
+# Use changed_when and failed_when to test the handlers
+#
+- name: testing execution order
+  hosts: webservers
+  gather_facts: false
+#  force_handlers: true
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+      notify:
+        - hand c
+        - handA
+
+    - name: T2
+      debug:
+        msg: Task 2
+      notify:
+        - hand b
+
+    - name: T3
+      debug:
+        msg: Task 3
+      notify:
+        - hand c
+        - hand b
+
+  handlers:
+    - name: handA
+      debug:
+        msg: Handler A
+
+    - name: hand b
+      debug:
+        msg: Handler B
+
+    - name: hand c
+      debug:
+        msg: Handler C

@@ -1,0 +1,24 @@
+---
+- name: Testing simple block
+  hosts: testservers
+  vars:
+    value1: 10
+  tasks:
+    - block:
+        - name: Task 1
+          debug:
+            msg: Task 1
+    
+        - name: Task 2
+          debug:
+            msg: Task 2
+    
+        - name: Task 3
+          debug:
+            msg: Task 3
+      when: value1 > 5
+
+    - name: Task 4
+      debug:
+        msg: Task 4
+

@@ -1,0 +1,51 @@
+---
+- name: deploy web and db servers
+  hosts:
+    - webservers
+    - dbservers
+  become: true
+  tasks:
+    - name: Installing packages
+      ansible.builtin.dnf:
+        name: '{{ pkg_name }}'
+        state: latest
+
+    - name: COMBINE THIS THIS WITH THE ONE ABOVE (USE LOOP or application LIST feature(if available))
+      ansible.builtin.dnf:
+        name: '{{ fw_pkg }}'
+        state: latest
+
+    - name: publish website
+      ansible.builtin.copy:
+        content: Welcome to {{ HOSTNAME-OF-SERVER }}
+        dest: /var/www/html/index.html
+      when: CONDITION-TO-ONLY-RUN-IN-WEBSERVERS-GROUP
+
+    - name: Start services
+      ansible.builtin.service:
+        name: '{{ svc_name }}'
+        state: started
+        enabled: true
+
+    - name: COMBINE THIS WITH THE Start services TASK. tip: name does not accept LIST
+      ansible.builtin.service:
+        name: '{{ fw_svc }}'
+        state: started
+        enabled: true
+
+    - name: open firewall port
+      ansible.posix.firewalld:
+        service: '{{ port_name }}'
+        state: enabled
+        permanent: yes
+        immediate: true
+
+- name: Verify the websites
+  hosts: clients
+  tasks:
+    - name: Testing websites
+      ansible.builtin.uri:
+        url: http://{{ item }}/
+        status_code: 200
+      loop: groups['webservers']
+...

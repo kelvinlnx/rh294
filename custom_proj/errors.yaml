@@ -1,0 +1,17 @@
+- name: tsting errors
+  hosts: webservers
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+
+    - name: T2
+      command: rpm -q asdf
+      when: '"serverb" in inventory_hostname'
+      changed_when: false
+      #ignore_errors: true
+      failed_when: false
+
+    - name: T3
+      debug:
+        msg: Task 3

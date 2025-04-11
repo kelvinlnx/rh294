@@ -1,0 +1,45 @@
+---
+- name: deploy web and db servers
+  hosts:
+    - webservers
+    - dbservers
+  become: true
+  tasks:
+    - name: Installing packages
+      ansible.builtin.dnf:
+        name:
+          - '{{ pkg_name }}'
+          - '{{ fw_pkg }}'
+        state: latest
+
+    - name: publish website
+      ansible.builtin.copy:
+        content: Welcome to {{ ansible_facts.fqdn }}
+        dest: /var/www/html/index.html
+      when: inventory_hostname in groups.webservers
+
+    - name: Start services
+      ansible.builtin.service:
+        name: '{{ item }}'
+        state: started
+        enabled: true
+      loop:
+        - '{{ svc_name }}'
+        - '{{ fw_svc }}'
+
+    - name: open firewall port
+      ansible.posix.firewalld:
+        service: '{{ port_name }}'
+        state: enabled
+        permanent: yes
+        immediate: true
+
+- name: Verify the websites
+  hosts: clients
+  tasks:
+    - name: Testing websites
+      ansible.builtin.uri:
+        url: http://{{ item }}/
+        status_code: 200
+      loop: "{{ groups['webservers'] }}"
+...
