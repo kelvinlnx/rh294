@@ -1,0 +1,35 @@
+---
+# Learning points:
+#   - use external variable file to ease editing
+#   - external variables should contain general settings as opposed to inventory variables
+#   - play and task variables vs external variables precedence
+#
+- name: external variables
+  hosts: testservers
+  gather_facts: false
+  vars:                         
+    value1: PLAY LEVEL           # does it matter if vars is declared before/after vars_files?
+  vars_files:
+    - vars/external.yaml
+  tasks:
+    - name: run the playbook again with play vars uncommented
+      ansible.builtin.debug:
+        msg: value1 is {{ value1 }}
+
+    - name: what if we declare task level variable?
+      vars:
+        value1: TASK LEVEL
+      ansible.builtin.debug:
+        msg: value1 is {{ value1 }}
+
+    - name: display new variable
+      ansible.builtin.debug:
+        msg: new variable is {{ user_list }}
+
+    - name: including variable using module
+      ansible.builtin.include_vars: vars/data.yaml
+
+    - name: display new variable
+      ansible.builtin.debug:
+        msg: new variable is {{ user_list }}
+

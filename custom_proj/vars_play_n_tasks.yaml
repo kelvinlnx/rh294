@@ -1,0 +1,43 @@
+---
+# Learning points:
+#   - play level variables
+#   - task level variables
+#   - task variable will not change play variable of the same name as shown in task 2 and 3
+#   - registering the module result in a host variable
+#   - use var option of debug to display content of variable
+#   - how to refer to a complex variable structure by using dot notation and bracket notation
+#   - how to correct status of command module by using changed_when
+- name: Testing variables
+  hosts: testservers
+  gather_facts: false
+  vars:
+    my_var: PLAY VARIABLE
+  tasks:
+    - name: Task 1 my_var is {{ my_var }}         # variable substitution can be used in the name
+      debug:
+        msg: my_var={{ my_var }}                  # or in value assigment for module options
+
+    - name: task level variable
+      vars:
+        my_var: TASK VARIABLE
+      debug:
+        msg: my_var is now {{ my_var }}           # my_var is 'hi there'
+
+    - name: Guess what is my_var?
+      debug:
+        msg: '{{ my_var }} is the answer'         # when starting value with {{, it needs to be quoted
+
+    - name: register result of task
+      command: free -h
+      register: cmd_result                        # storing result of module in a host variable
+      changed_when: false
+
+    - name: display result of command execution
+      debug:
+        var: cmd_result
+
+    - name: make use of result
+      debug:
+        msg:
+          - second line output was:
+          - '{{ cmd_result.stdout_lines[1] }}'    # can be written as cmd_result['stdout_lines'][1]

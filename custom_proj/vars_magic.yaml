@@ -1,0 +1,25 @@
+---
+# Learning points:
+#   - using the 4 magic variables
+#   - WARNING: the more inventory hosts there are, the larger the hostvars magic variable
+#   - LISTEN TO INSTRUCTOR EXPLAINING hostvars!!! It's a very important variable
+#
+- name: magic variables
+  hosts: clients
+  gather_facts: false
+  tasks:
+    - name: name of host in the inventory
+      ansible.builtin.debug:
+        msg: inventory_hostname = {{ inventory_hostname }}
+
+    - name: what groups does the current host belong to?
+      ansible.builtin.debug:
+        msg: group_names = {{ group_names }}
+
+    - name: what are all the groups in the inventory and the hosts in the groups?
+      ansible.builtin.debug:
+        msg: groups = {{ groups }}
+
+    - name: display the father/mother of all variables :)
+      ansible.builtin.debug:
+        var: hostvars

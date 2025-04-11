@@ -1,0 +1,20 @@
+---
+# Learning points:
+#   - inventory(host) variables to simplify group management
+#
+- name: inventory variables
+  hosts:
+    - webservers
+    - dbservers
+  gather_facts: false
+  tasks:
+    - name: Webserver software information
+      debug:
+        msg:
+          - 'package name: {{ pkg_name }}'
+          - 'service name: {{ svc_name }}'
+          - 'port name: {{ port_name }}'
+          - 'firewall package name: {{ fw_pkg }}'
+          - 'firewall service name: {{ fw_svc }}'
+          
+

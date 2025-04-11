@@ -1,0 +1,2 @@
+fw_pkg: firewalld
+fw_svc: firewalld

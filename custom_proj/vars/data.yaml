@@ -1,0 +1,5 @@
+user_list:
+  - user: albert
+    age: 1
+  - user: julie
+    age: 2

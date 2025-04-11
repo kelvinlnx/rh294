@@ -1,0 +1,19 @@
+---
+ansible-navigator:
+  execution-environment:
+    enabled: True
+#    environment-variables:
+#      set:
+#        ANSIBLE_STDOUT_CALLBACK: yaml
+    image: ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  logging:
+    append: true
+    file: ./logs/ansible-navigator.log
+    level: warning
+  mode: stdout
+  playbook-artifact:
+    enable: false
+  time-zone: UTC
+...

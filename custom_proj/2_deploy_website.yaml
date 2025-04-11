@@ -1,0 +1,51 @@
+---
+- name: deploy web and db servers
+  hosts:
+    - webservers
+    - dbservers
+  become: true
+  tasks:
+    - name: install server
+      ansible.builtin.dnf:
+        name: '{{ pkg_name }}'
+        state: latest
+
+    - name: make sure firewalld is installed
+      ansible.builtin.dnf:
+        name: '{{ fw_pkg }}'
+        state: latest
+
+# we will update this task when we learn how to write conditions
+#    - name: publish website
+#      ansible.builtin.copy:
+#        content: Welcome to {{ inventory_hostname }}
+#        dest: /var/www/html/index.html
+
+    - name: start service
+      ansible.builtin.service:
+        name: '{{ svc_name }}'
+        state: started
+        enabled: true
+
+    - name: make sure firewall service is started
+      ansible.builtin.service:
+        name: '{{ fw_svc }}'
+        state: started
+        enabled: true
+
+    - name: open firewall port
+      ansible.posix.firewalld:
+        service: '{{ port_name }}'
+        state: enabled
+        permanent: yes
+        immediate: true
+
+# we will also update this play when we learn about loops
+- name: test website
+  hosts: clients
+  tasks:
+    - name: test website
+      ansible.builtin.uri:
+        url: http://servera/
+        status_code: 200
+...
