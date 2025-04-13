@@ -1,0 +1,17 @@
+---
+- name: testing roles
+  hosts: servera.lab.example.com
+  roles:
+    - simple
+    - role: simple
+      public_username: Einstein
+    - role: simple
+      public_username: Albert
+  pre_tasks:
+    - name: Before
+      debug:
+        msg: Before
+  tasks:
+    - name: After
+      debug:
+        msg: After

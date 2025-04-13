@@ -1,0 +1,29 @@
+- name: play1
+  hosts: clients
+  tasks:
+    - name: First Task
+      debug:
+        msg: First Task
+          
+    - name: Import Tasks
+      vars:
+        data: Jack
+        username: julie
+      import_tasks: external_tasks.yaml
+
+    - name: Include Tasks
+      vars:
+        username: julie
+      include_tasks: external_tasks.yaml
+      loop:
+        - one
+        - two
+      loop_control:
+        loop_var: data
+          
+    - name: Last Task
+      debug:
+        msg: Last Task
+
+- import_playbook: test_vars.yaml          
+  when: runit | bool

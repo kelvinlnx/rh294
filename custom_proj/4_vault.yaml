@@ -1,0 +1,8 @@
+- name: play1
+  hosts: servera.lab.example.com
+  vars_files:
+    - vars/hidden
+  tasks:
+    - name: Secret Info
+      debug:
+        msg: user is {{ user }} and password is {{ password }}

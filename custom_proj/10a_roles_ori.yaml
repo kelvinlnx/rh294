@@ -1,0 +1,27 @@
+- name: Testing Simple Playbook
+  hosts: clients
+  gather_facts: true
+  vars:
+    public_username: julie
+  vars_files:
+    - vars/file_data
+  tasks:
+    - name: Task 1
+      debug:
+        msg: user is {{ public_username }}
+
+    - name: Task 2
+      vars:
+        local_data: "Have a good day {{ public_username }}"
+      debug:
+        msg: Special message to you- {{ local_data }}
+
+    - name: create file1.txt in users home directory
+      copy:
+        src: '{{ src_file }}'
+        dest: '{{ dest_file }}'
+
+    - name: Using template
+      template:
+        src: '{{ src_file }}.j2'
+        dest: '{{ dest_file }}-template

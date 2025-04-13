@@ -1,0 +1,22 @@
+- name: testing templates
+  hosts: servera.lab.example.com
+  gather_facts: true
+  vars:
+    user_list:
+      - albert
+      - julie
+      - muniandy
+    dest_file: /tmp/config.cfg
+  tasks:
+    - name: copy template to /tmp/config.cfg
+      template:
+        src: templates/config.cfg.j2
+        dest: "{{ dest_file }}"
+
+    - name: get contents of file
+      command: cat {{ dest_file }}
+      register: file_content
+
+    - name: display contents
+      debug:
+        var: file_content.stdout_lines
