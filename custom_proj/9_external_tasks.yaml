@@ -9,12 +9,12 @@
       vars:
         data: Jack
         username: julie
-      import_tasks: external_tasks.yaml
+      import_tasks: tasks/external_tasks.yaml
 
     - name: Include Tasks
       vars:
         username: julie
-      include_tasks: external_tasks.yaml
+      include_tasks: tasks/external_tasks.yaml
       loop:
         - one
         - two
@@ -25,5 +25,5 @@
       debug:
         msg: Last Task
 
-- import_playbook: test_vars.yaml          
+- import_playbook: 1_first.yaml          
   when: runit | bool

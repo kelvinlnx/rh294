@@ -24,4 +24,4 @@
     - name: Using template
       template:
         src: '{{ src_file }}.j2'
-        dest: '{{ dest_file }}-template
+        dest: '{{ dest_file }}-template'

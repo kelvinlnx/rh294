@@ -4,11 +4,12 @@
 - name: testing execution order
   hosts: webservers
   gather_facts: false
-#  force_handlers: true
+  force_handlers: true
   tasks:
     - name: T1
       debug:
         msg: Task 1
+      changed_when: true
       notify:
         - hand c
         - handA
@@ -16,12 +17,15 @@
     - name: T2
       debug:
         msg: Task 2
+      changed_when: true
+      failed_when: inventory_hostname == 'serverb.lab.example.com'
       notify:
         - hand b
 
     - name: T3
       debug:
         msg: Task 3
+      changed_when: true
       notify:
         - hand c
         - hand b

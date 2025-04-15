@@ -1,0 +1,4 @@
+---
+# vars file for simple
+src_file: greetings
+dest_file: ~/greetings

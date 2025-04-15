@@ -1,0 +1,9 @@
+- name: testing check
+  hosts: testservers
+  tasks:
+    - name: replace hostname with machine
+      lineinfile:
+        path: /tmp/config.cfg
+        line: machine\g<1>
+        regexp: ^hostname(.*)
+        backrefs: yes

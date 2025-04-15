@@ -15,6 +15,7 @@
 
     - name: get contents of file
       command: cat {{ dest_file }}
+      changed_when: false
       register: file_content
 
     - name: display contents
