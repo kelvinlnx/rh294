@@ -1,0 +1,34 @@
+# Notes:
+# * use good naming convention for different types of variables
+# * usage of default filter to enhance concurrent execution of the playbook
+# * when to use omit option for the default filter
+# * data type casting
+# * parsing & encoding data structure
+- name: Testing variable filters
+  hosts: '{{ pub_hosts | default("serverb.lab.example.com") }}'
+  gather_facts: false
+  vars_files:
+    - vars/users
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+
+    - name: T2 - when to use omit
+      user:
+        name: '{{ item.name }}'                 # item['name']
+        shell: '{{ item.shell | default(omit) }}'               # item['shell']
+      loop: "{{ g_users }}" 
+      become: true
+
+    - name: T3 - data type casting
+      vars:
+        flag: true
+      debug:
+        msg: Task 3
+      when: flag | bool
+
+    - name: T4 - data struct parsing & encoding
+      copy:
+        content: "{{ g_users | to_nice_json }}"
+        dest: "/tmp/data"

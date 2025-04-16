@@ -1,0 +1,30 @@
+- name: testing lookup plugin
+  hosts: servera.lab.example.com
+  vars:
+    some_data: hello world
+    another_data: yello world
+    first_data: something else
+    final_data: 123
+  tasks:
+    - name: search data is
+      vars:
+        search_item: some
+      debug:
+        msg: The value you are looking for is -> {{ lookup('vars', search_item + '_data') }}
+
+    - name: testing subelements lookup
+      vars:
+        company:
+          - name: db1
+            tables:
+              - name: T1
+              - name: T2
+          - name: db2
+            desc: dummy db
+          - name: db3
+            tables:
+              - name: T_a
+              - name: T_b
+      debug:
+        var: item
+      loop: "{{ lookup('subelements', company, 'tables', {'skip_missing': true}) }}"

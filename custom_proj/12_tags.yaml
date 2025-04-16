@@ -1,0 +1,35 @@
+# bad example, because the tags will contradict each other
+# eg Task 2
+- name: testing tags
+  hosts: webservers
+  gather_facts: false
+  tasks:
+    - name: T1 - test
+      debug:
+        msg: Task 1
+      tags:
+        - testing
+
+    - name: T2 - test & prod
+      debug:
+        msg: Task 2
+      tags:
+        - testing
+        - production
+
+
+    - name: T3 - always
+      debug:
+        msg: Task 3
+      tags:
+        - always
+
+    - name: T4 - only prod
+      debug:
+        msg: Task 4
+      tags:
+        - production
+
+    - name: T5 - notag
+      debug:
+        msg: i ain\'t got no tag

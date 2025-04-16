@@ -1,0 +1,13 @@
+- name: testing fork
+  hosts: all
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+
+    - name: T2
+      command: sleep 5
+
+    - name: T3
+      debug:
+        msg: Task 3

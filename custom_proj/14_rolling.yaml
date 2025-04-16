@@ -1,0 +1,19 @@
+- name: Testing
+  hosts: all
+  gather_facts: false
+  serial:
+    - 1
+    - 2
+    - 100%
+  tasks:
+    - name: T1
+      debug:
+        msg: Task 1
+
+    - name: T2
+      debug:
+        msg: Task 2 
+
+    - name: T3
+      debug:
+        msg: Task 3

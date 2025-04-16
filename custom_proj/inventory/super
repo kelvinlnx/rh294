@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# super: A very simple dynamic inventory script that generates host list
+#        This script only demonstrates the --list option and not --host PATTERN option.
+# Author: Kelvin Lai
+
+NUM_HOSTS=$(shuf -i 1-5 -n1)
+
+if [ "$1" == '--list' ]; then
+	echo '{'
+	echo '    "_meta": {'
+	echo '        "hostvars": {}'
+	echo '    },'
+	echo '    "all": {'
+	echo '        "children": ['
+	echo '            "'${0##*/}'",'
+	echo '            "ungrouped"'
+	echo '        ]'
+	echo '    },'
+	echo '    "'${0##*/}'": {'
+	echo '        "hosts": ['
+	INDEX=1
+	for CNT in `shuf -i 1-10 -n$NUM_HOSTS`; do
+		echo -n '            "host_'$CNT'"'
+		if [ $INDEX == $NUM_HOSTS ]; then
+			echo
+		else
+			echo ','
+		fi
+		((INDEX=INDEX+1))
+	done
+	echo '        ]'
+	echo '    }'
+	echo '}'
+fi
+
+exit 0
+

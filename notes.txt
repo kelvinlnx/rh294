@@ -341,7 +341,7 @@ Variables
 
   Internal Variables
   ------------------
-    ansible_connection: local|Smart|ssh|paramiko|winrm
+    ansible_connection: local|Smart|ssh|paramiko|winrm|network_cli|netconf
 
     ansible_user: USERNAME
     ansible_password: PASSWORD
